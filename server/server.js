@@ -1,3 +1,5 @@
+require('./config/config')
+
 const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -8,6 +10,7 @@ var {Message} = require('./models/message');
 var {authenticate} = require('./middleware/authenticate');
 
 var app = express();
+const port = process.env.PORT | 3000;
 app.use(bodyParser.json());
 
 //for logging request
@@ -81,6 +84,6 @@ app.put('/block/:username', authenticate, async (req,res) => {
 
 });
 
-app.listen(3000,() => {
-  console.log('Started on port 3000');
+app.listen(port,() => {
+  console.log(`Started on port ${port}`);
 });

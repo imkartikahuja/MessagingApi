@@ -48,14 +48,14 @@ UserSchema.methods.toJSON = function () { //to return only id n username else it
   var user = this;
   var userObject = user.toObject();
 
-  return _.pick(userObject,['_id','username']);
+  return _.pick(userObject,['_id','username','block_list']);
 };
 
 //instance method to generate Authentication token and saving in user document
 UserSchema.methods.generateAuthToken = function () {
   var user = this;
   var access = 'auth';
-  var token = jwt.sign({_id: user._id.toHexString(),access}, 'secretabc123').toString();
+  var token = jwt.sign({_id: user._id.toHexString(),access},process.env.JWT_SECRET).toString();
 
   user.tokens = user.tokens.concat([{access,token}]);
 
@@ -96,7 +96,7 @@ UserSchema.methods.checkUserBlocked = function (toUser) {
     // to check if sender has blocked receiving user or vice-versa
     else if (
             _.find(user.block_list,{'username' : toUser}) ||
-            _.find(to_user.block_list,{'username' : user.username})
+            _.find(to_user[0].block_list,{'username' : user.username})
           ) {
       return Promise.reject('User is blocked');
     }
@@ -133,7 +133,7 @@ UserSchema.statics.findByToken = function (token) {
   var decoded;
 
   try {
-    decoded = jwt.verify(token,'secretabc123');
+    decoded = jwt.verify(token,process.env.JWT_SECRET);
   } catch (e) {
     return Promise.reject();
   }
