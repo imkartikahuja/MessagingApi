@@ -46,10 +46,14 @@ app.post('/sendmessage', authenticate, async (req,res) => {
     var body = _.pick(req.body,['toUser'],['subject'],['content']);
     body.fromUser = req.user.username;
     var message = new Message(body);
+
+    await req.user.checkUserBlocked(body.toUser);
+
+    //if not blocked then save message
     await message.save();
     res.send(message);
   } catch (e) {
-    res.status(400).send();
+    res.status(400).send(e);
   }
 });
 
@@ -63,6 +67,18 @@ app.get('/inbox', authenticate, async (req,res) => {
   } catch (e) {
     res.status(400).send(e);
   }
+});
+
+app.put('/block/:username', authenticate, async (req,res) => {
+  var username = req.params.username;
+
+  try {
+      var username = await req.user.addToBlocklist(username);
+      res.send(`${username} blocked`);
+  } catch (e) {
+    res.status(400).send(e);
+  }
+
 });
 
 app.listen(3000,() => {

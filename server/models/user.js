@@ -26,6 +26,12 @@ var UserSchema = new mongoose.Schema({
     required: true,
     minlength: 1
   },
+  block_list: [{
+    username: {
+      type:String,
+      minlength: 1
+    }
+  }],
   tokens: [{
     access: {
       type: String,
@@ -55,6 +61,48 @@ UserSchema.methods.generateAuthToken = function () {
 
   return user.save().then(() => {
     return token;
+  });
+};
+
+UserSchema.methods.addToBlocklist = function (username) {
+  var user = this;
+  //to check if user exist
+  return User.find({username}).then((result_user) => {
+    if (result_user.length === 0) {
+      return Promise.reject(`${username} does not exist`);
+    }
+    else {
+      //check if user is already blocked
+      if ( _.find(user.block_list,{'username' : username})) {
+        return username;
+      }
+      user.block_list = user.block_list.concat([{username}]);
+      return user.save().then(() => {
+        return username;
+      });
+    }
+  });
+};
+
+UserSchema.methods.checkUserBlocked = function (toUser) {
+  var user = this;
+
+  // get object of receiving user
+  return User.find({'username' : toUser}).then((to_user) => {
+    //check if receiving user exist
+    if(_.size(to_user) === 0) {
+      return Promise.reject(`${toUser} does not exist`);
+    }
+    // to check if sender has blocked receiving user or vice-versa
+    else if (
+            _.find(user.block_list,{'username' : toUser}) ||
+            _.find(to_user.block_list,{'username' : user.username})
+          ) {
+      return Promise.reject('User is blocked');
+    }
+    else {
+      return Promise.resolve();
+    }
   });
 };
 
