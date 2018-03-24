@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 var {mongoose} = require('./db/mongoose');
 var {User} = require('./models/user');
 var {Message} = require('./models/message');
+var {authenticate} = require('./middleware/authenticate');
 
 var app = express();
 app.use(bodyParser.json());
@@ -40,12 +41,15 @@ app.post('/register', async (req,res) => {
   }
 });
 
-app.post('/sendmessage', async (req,res) => {
+app.post('/sendmessage', authenticate, async (req,res) => {
   try {
-    var message = _.pick(req.body,['toUser'],['subject'],['content']);
-    
+    var body = _.pick(req.body,['toUser'],['subject'],['content']);
+    body.fromUser = req.user.username;
+    var message = new Message(body);
+    await message.save();
+    res.send(message);
   } catch (e) {
-
+    res.status(400).send();
   }
 });
 
