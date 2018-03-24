@@ -48,7 +48,7 @@ UserSchema.methods.generateAuthToken = function () {
   });
 };
 
-UserSchema.methods.toJSON = function () {     //to return only id n email else it will return everthing include password so we overwrite moongoose method
+UserSchema.methods.toJSON = function () {     //to return only id n username else it will return everthing include password so we overwrite moongoose method
   var user = this;
   var userObject = user.toObject();
 
