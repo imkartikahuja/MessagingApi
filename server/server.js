@@ -53,6 +53,18 @@ app.post('/sendmessage', authenticate, async (req,res) => {
   }
 });
 
+app.get('/inbox', authenticate, async (req,res) => {
+  try {
+    var messages = await Message.find({
+      toUser : req.user.username
+    });
+
+    res.send({messages});
+  } catch (e) {
+    res.status(400).send(e);
+  }
+});
+
 app.listen(3000,() => {
   console.log('Started on port 3000');
 });

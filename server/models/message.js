@@ -21,6 +21,10 @@ var Message = mongoose.model('Message', {
     required: true,
     minlength: 1
   },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
 });
 
 module.exports = {Message};
