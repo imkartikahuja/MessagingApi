@@ -21,7 +21,8 @@ app.post('/register', async (req,res) => {
     var credentials = _.pick(req.body,['username'],['password'],['firstname'],['lastname']);
     var user = new User(credentials);
     await user.save();
-    res.send(user);
+    const token = await user.generateAuthToken();
+    res.header('x-auth',token).send(user);
   } catch (e) {
     res.status(400).send(e);
   }
