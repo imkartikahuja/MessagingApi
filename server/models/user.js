@@ -48,6 +48,13 @@ UserSchema.methods.generateAuthToken = function () {
   });
 };
 
+UserSchema.methods.toJSON = function () {     //to return only id n email else it will return everthing include password so we overwrite moongoose method
+  var user = this;
+  var userObject = user.toObject();
+
+  return _.pick(userObject,['_id','email']);
+};
+
 var User = mongoose.model('User',UserSchema);
 
 module.exports = {User};
