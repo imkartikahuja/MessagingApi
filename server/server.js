@@ -10,16 +10,17 @@ var {Message} = require('./models/message');
 var {authenticate} = require('./middleware/authenticate');
 
 var app = express();
-const port = process.env.PORT | 3000;
+const port = process.env.PORT;
+
 app.use(bodyParser.json());
 
-//for logging request
-app.use((req,res,next) => {
-  var now = new Date().toString();
-  var log = `${now}: ${req.method} ${req.url}`;
-  console.log(log);
-  next();
-});
+// //for logging request
+// app.use((req,res,next) => {
+//   var now = new Date().toString();
+//   var log = `${now}: ${req.method} ${req.url}`;
+//   console.log(log);
+//   next();
+// });
 
 app.post('/login', async (req,res) => {
   try {
