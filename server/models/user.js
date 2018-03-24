@@ -79,6 +79,24 @@ UserSchema.statics.findByCredentials = function (username,password) {
   });
 };
 
+//Model method to find user by token
+UserSchema.statics.findByToken = function (token) {
+  var User = this;
+  var decoded;
+
+  try {
+    decoded = jwt.verify(token,'secretabc123');
+  } catch (e) {
+    return Promise.reject();
+  }
+
+  return User.findOne({
+    '_id' : decoded._id,
+    'tokens.token' : token,
+    'tokens.auth' : 'auth '
+  });
+};
+
 //mongoose middleware run before saving document - used for hashing password
 UserSchema.pre('save', function (next) {
   var user = this;

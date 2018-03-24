@@ -40,6 +40,14 @@ app.post('/register', async (req,res) => {
   }
 });
 
+app.post('/sendmessage', async (req,res) => {
+  try {
+    var message = _.pick(req.body,['toUser'],['subject'],['content']);
+    
+  } catch (e) {
+
+  }
+});
 
 app.listen(3000,() => {
   console.log('Started on port 3000');
