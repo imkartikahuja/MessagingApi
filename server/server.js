@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 
 var {mongoose} = require('./db/mongoose');
 var {User} = require('./models/user');
+var {Message} = require('./models/message');
 
 var app = express();
 app.use(bodyParser.json());
