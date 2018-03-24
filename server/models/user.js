@@ -45,7 +45,7 @@ UserSchema.methods.toJSON = function () { //to return only id n username else it
   return _.pick(userObject,['_id','username']);
 };
 
-
+//instance method to generate Authentication token and saving in user document
 UserSchema.methods.generateAuthToken = function () {
   var user = this;
   var access = 'auth';
@@ -55,6 +55,27 @@ UserSchema.methods.generateAuthToken = function () {
 
   return user.save().then(() => {
     return token;
+  });
+};
+
+//Model method to find user by credentials(username and password)
+UserSchema.statics.findByCredentials = function (username,password) {
+  var User = this;
+
+  return User.findOne({username}).then ((user) => {
+    if (!user) {
+      return Promise.reject();
+    }
+
+    return new Promise((resolve, reject) => {
+      bcrypt.compare(password, user.password, (err,res) => {
+        if (res) {
+          resolve(user);
+        } else {
+          reject();
+        }
+      });
+    });
   });
 };
 

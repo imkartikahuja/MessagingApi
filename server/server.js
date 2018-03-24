@@ -16,6 +16,17 @@ app.use((req,res,next) => {
   next();
 });
 
+app.post('/login', async (req,res) => {
+  try {
+    const credentials = _.pick(req.body,['username'],['password']);
+    const user = await User.findByCredentials(credentials.username,credentials.password);
+    const token = await user.generateAuthToken();
+    res.header('x-auth',token).send(user);
+  } catch (e) {
+    res.status(400).send(e);
+  }
+});
+
 app.post('/register', async (req,res) => {
   try {
     var credentials = _.pick(req.body,['username'],['password'],['firstname'],['lastname']);
